@@ -26,7 +26,7 @@ class SoundCloudScrapper:
 
         response = requests.get(artist_url)
         artist_soup = BeautifulSoup(response.content, 'html.parser')
-        tracks = soup.find_all('li', {'class': 'trackList__item'})
+        tracks = artist_soup.find_all('li', {'class': 'trackList__item'})
 
         genres = []
         for track in tracks:
