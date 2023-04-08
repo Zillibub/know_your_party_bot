@@ -8,7 +8,13 @@ class SoundCloudScrapper:
 
     base_url = "https://soundcloud.com"
 
-    def find_genere(self, artist_name: str) ->Union[str, None]:
+    def find_genre(self, artist_name: str) -> Union[Counter, None]:
+        """
+        Given the name of an artist, returns a Counter object with the
+        genres of their top tracks on SoundCloud.
+        :param artist_name: str, the name of the artist to search for.
+        :return:  Counter or None, a Counter object containing the genres found, or None if no artists are found.
+        """
         url = f'{self.base_url}/search/people?q={artist_name}'
         response = requests.get(url)
         soup = BeautifulSoup(response.content, 'html.parser')
@@ -27,6 +33,3 @@ class SoundCloudScrapper:
             genres.append(track.find(itemprop="genre").attrs["content"])
 
         return Counter(genres)
-
-
-
