@@ -17,19 +17,23 @@ class SoundCloudScrapper:
         """
         url = f'{self.base_url}/search/people?q={artist_name}'
         response = requests.get(url)
-        soup = BeautifulSoup(response.content, 'html.parser')
-        artists = soup.find_all('h2', {'class': 'soundTitle__title sc-link-dark'})
-        if len(artists) == 0:
+        search_soup = BeautifulSoup(response.content, 'html.parser')
+        search_soup.findAll("h2")
+        hrefs = []
+        for search_result in search_soup.findAll("h2"):
+            hrefs.append(search_result.a.attrs["href"])
+        if len(hrefs) == 0:
             return None
-        link = artists[0].find('a')['href']   # using the most popular
+        link = [x for x in hrefs if x.count("/") == 1][0]
         artist_url = f'{self.base_url}{link}'
 
         response = requests.get(artist_url)
         artist_soup = BeautifulSoup(response.content, 'html.parser')
-        tracks = artist_soup.find_all('li', {'class': 'trackList__item'})
 
         genres = []
-        for track in tracks:
-            genres.append(track.find(itemprop="genre").attrs["content"])
+        for track in artist_soup.find_all(itemprop="track"):
+            genre_soup = track.find(itemprop="genre")
+            if genre_soup:
+                genres.append(genre_soup.attrs["content"])
 
         return Counter(genres)
