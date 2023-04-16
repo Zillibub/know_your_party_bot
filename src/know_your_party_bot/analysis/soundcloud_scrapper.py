@@ -15,8 +15,21 @@ class SoundCloudScrapper:
 
     @staticmethod
     def clean_names_with_openai(content) -> List[str]:
+        """
+        turns this:
+            DAMES BROWN [LIVE PA]
+            Melvo Baptiste
+            Natasha Diggs
+            Simon Dunmore [Last Ever DJ Set]
+        into this:
+            ['DAMES BROWN', 'Melvo Baptiste', 'Natasha Diggs', 'Simon Dunmore']
+        basically it removes all useless information
+        since it uses language model, use it with caution
+        :param content:
+        :return:
+        """
         prompt_content = "Reply only with text that can be parsed with a python json library, result must be a list" \
-                         f"extract only artist and gruop names from this data : {content}"
+                         f"extract only artist and group names from this data : {content}"
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
