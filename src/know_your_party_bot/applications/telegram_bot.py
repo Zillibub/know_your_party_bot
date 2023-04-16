@@ -14,7 +14,12 @@ if __version_info__ < (20, 0, 0, "alpha", 1):
         f"{TG_VER} version of this example, "
         f"visit https://docs.python-telegram-bot.org/en/v{TG_VER}/examples.html"
     )
-from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
+from telegram import (
+    ReplyKeyboardMarkup,
+    ReplyKeyboardRemove,
+    Update,
+    InputMediaPhoto,
+)
 from telegram.ext import (
     Application,
     CommandHandler,
@@ -65,9 +70,13 @@ async def analyse(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     artists = text.split('\n')[1:]
 
-    LineupAnalyser(
+    analysis_result = LineupAnalyser(
         artists=artists
     ).analyse()
+
+    await update.message.reply_media_group([
+        InputMediaPhoto(media=analysis_result)
+    ])
 
 
 async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
