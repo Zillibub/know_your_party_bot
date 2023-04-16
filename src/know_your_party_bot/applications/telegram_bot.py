@@ -24,6 +24,9 @@ from telegram.ext import (
     filters,
 )
 
+from know_your_party_bot.analysis.lineup_analyzer import LineupAnalyser
+from know_your_party_bot.core.settings import settings
+
 # Enable logging
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -55,6 +58,16 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     )
 
     return CHOOSING
+
+
+async def analyse(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = update.message.text
+
+    artists = text.split('\n')
+
+    LineupAnalyser(
+        artists=artists
+    ).analyse()
 
 
 async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -111,11 +124,14 @@ async def done(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 def start_application() -> None:
     """Run the bot."""
     # Create the Application and pass it your bot's token.
-    application = Application.builder().token("TOKEN").build()
+    application = Application.builder().token(settings.TELEGRAM_BOT_TOKEN).build()
 
     # Add conversation handler with the states CHOOSING, TYPING_CHOICE and TYPING_REPLY
     conv_handler = ConversationHandler(
-        entry_points=[CommandHandler("start", start)],
+        entry_points=[
+            CommandHandler("start", start),
+            CommandHandler("analyse", analyse)
+        ],
         states={
             CHOOSING: [
                 MessageHandler(
@@ -142,3 +158,6 @@ def start_application() -> None:
 
     # Run the bot until the user presses Ctrl-C
     application.run_polling()
+
+
+start_application()

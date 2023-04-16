@@ -26,7 +26,7 @@ class LineupAnalyser:
         # Plot a donut pie chart using seaborn
         plt.figure(figsize=(6, 6))
         ax = sns.color_palette("pastel").as_hex()
-        plt.pie(top_genres.keys(), labels=top_genres.values(), colors=ax,
+        plt.pie(top_genres.values(), labels=top_genres.keys(), colors=ax,
                 autopct='%1.1f%%', pctdistance=0.85, startangle=90)
         my_circle = plt.Circle((0, 0), 0.7, color='white')
         p = plt.gcf()
