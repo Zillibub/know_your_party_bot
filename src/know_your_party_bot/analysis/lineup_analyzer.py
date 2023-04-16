@@ -20,6 +20,7 @@ class LineupAnalyser:
     ):
         self.artist_urls = []
         self.unknown_artist_names = []
+        self.top_genres = None
 
     def analyse(self, artist_names: List[str]) -> AnalysisResult:
 
@@ -41,12 +42,25 @@ class LineupAnalyser:
 
         combined = sum(genres_counters, Counter())
 
-        top_genres = dict(combined.most_common(5))
+        self.top_genres = dict(combined.most_common(5))
+
+        image_bytes = self.create_image()
+
+        analysis_result = AnalysisResult(
+            image_bytes=image_bytes,
+            unknown_artist_names=self.unknown_artist_names
+        )
+        return analysis_result
+
+    def create_image(self) -> bytes:
+
+        if self.top_genres is None:
+            raise ValueError("top_genres field not set")
 
         # Plot a donut pie chart using seaborn
         plt.figure(figsize=(6, 6))
         ax = sns.color_palette("pastel").as_hex()
-        plt.pie(top_genres.values(), labels=top_genres.keys(), colors=ax,
+        plt.pie(self.top_genres.values(), labels=self.top_genres.keys(), colors=ax,
                 autopct='%1.1f%%', pctdistance=0.85, startangle=90)
         my_circle = plt.Circle((0, 0), 0.7, color='white')
         p = plt.gcf()
@@ -57,8 +71,4 @@ class LineupAnalyser:
         plt.savefig(buffer, format="png")
         buffer.seek(0)
 
-        analysis_result = AnalysisResult(
-            image_bytes=buffer.getvalue(),
-            unknown_artist_names=self.unknown_artist_names
-        )
-        return analysis_result
+        return buffer.getvalue()
