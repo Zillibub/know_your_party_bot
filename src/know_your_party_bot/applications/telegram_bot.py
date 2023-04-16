@@ -71,9 +71,14 @@ async def analyse(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     analysis_result = LineupAnalyser().analyse_raw(text)
 
+    caption = ""
+
+    if len(analysis_result.unknown_artist_names) > 0:
+        caption += "\n Sorry, didn't found these guys: " + " ".join(analysis_result.unknown_artist_names)
+
     photo = InputMediaPhoto(
         media=analysis_result.image_bytes,
-        caption="Sorry, didn't found these guys: " + " ".join(analysis_result.unknown_artist_names)
+        caption=caption
     )
 
     await update.message.reply_media_group([photo])
