@@ -1,3 +1,4 @@
+import io
 import seaborn as sns
 import matplotlib.pyplot as plt
 from typing import List
@@ -13,7 +14,7 @@ class LineupAnalyser:
     ):
         self.artists = artists
 
-    def analyse(self):
+    def analyse(self) -> bytes:
         genres_counters = [
             SoundCloudScrapper().find_genre(artist)
             for artist in self.artists
@@ -32,4 +33,8 @@ class LineupAnalyser:
         p = plt.gcf()
         p.gca().add_artist(my_circle)
         plt.title('Top 5 genres in the lineup', fontsize=14)
-        plt.show()
+
+        buffer = io.BytesIO()
+        plt.savefig(buffer, format="png")
+        buffer.seek(0)
+        return buffer.getvalue()

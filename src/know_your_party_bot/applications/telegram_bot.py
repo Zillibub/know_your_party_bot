@@ -63,7 +63,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 async def analyse(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
 
-    artists = text.split('\n')
+    artists = text.split('\n')[1:]
 
     LineupAnalyser(
         artists=artists
