@@ -19,6 +19,7 @@ from telegram import (
     ReplyKeyboardRemove,
     Update,
     InputMediaPhoto,
+    InputTextMessageContent,
 )
 from telegram.ext import (
     Application,
@@ -70,13 +71,18 @@ async def analyse(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     artists = text.split('\n')[1:]
 
-    analysis_result = LineupAnalyser(
-        artists=artists
-    ).analyse()
+    analysis_result = LineupAnalyser().analyse(artists)
 
-    await update.message.reply_media_group([
-        InputMediaPhoto(media=analysis_result)
-    ])
+    reply = [
+        InputMediaPhoto(media=analysis_result.image_bytes)
+    ]
+
+    if len(analysis_result.unknown_artist_names) > 0:
+        reply.append(InputTextMessageContent(
+            message_text="Sorry, didn't found these guys: " + " ".join(analysis_result.unknown_artist_names)
+        ))
+
+    await update.message.reply_media_group(reply)
 
 
 async def regular_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
