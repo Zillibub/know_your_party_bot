@@ -4,6 +4,7 @@ from pathlib import Path
 
 class Settings(BaseSettings):
     TELEGRAM_BOT_TOKEN: str
+    openai_token: str
 
 
 path = Path(__file__).parent.parent.parent.parent.absolute()

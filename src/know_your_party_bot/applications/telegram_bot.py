@@ -69,9 +69,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 async def analyse(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
 
-    artists = text.split('\n')[1:]
-
-    analysis_result = LineupAnalyser().analyse(artists)
+    analysis_result = LineupAnalyser().analyse_raw(text)
 
     photo = InputMediaPhoto(
         media=analysis_result.image_bytes,

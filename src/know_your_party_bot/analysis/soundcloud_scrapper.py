@@ -1,11 +1,36 @@
+import openai
 import requests
+import json
+from typing import List
 from typing import Union
 from collections import Counter
 from bs4 import BeautifulSoup
+from know_your_party_bot.core.settings import settings
+
+openai.api_key = settings.openai_token
 
 
 class SoundCloudScrapper:
     base_url = "https://soundcloud.com"
+
+    @staticmethod
+    def clean_names_with_openai(content) -> List[str]:
+        prompt_content = "Reply only with text that can be parsed with a python json library, result must be a list" \
+                         f"extract only artist and gruop names from this data : {content}"
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "user", "content": prompt_content},
+            ]
+        )
+        completion = response.choices[0].message.content
+
+        result = json.loads(completion)
+
+        if not isinstance(result, list):
+            raise ValueError("Parsing failed")
+
+        return result
 
     def find_artist(self, artist_name: str) -> Union[str, None]:
         """

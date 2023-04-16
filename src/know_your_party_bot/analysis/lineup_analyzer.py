@@ -21,13 +21,23 @@ class LineupAnalyser:
         self.artist_urls = []
         self.unknown_artist_names = []
         self.top_genres = None
+        self.scrapper = SoundCloudScrapper()
+
+    def analyse_raw(self, message: str) -> AnalysisResult:
+        # TODO take command from some list, not hardcode
+        message = message.replace("/analyse", "")  # remove bot command
+        try:
+            artist_names = self.scrapper.clean_names_with_openai(message)
+        except Exception as e:
+            print(e)  # TODO use logging library here
+            artist_names = message.split('\n')[1:]
+
+        return self.analyse(artist_names)
 
     def analyse(self, artist_names: List[str]) -> AnalysisResult:
 
-        scrapper = SoundCloudScrapper()
-
         for artist_name in artist_names:
-            artist_url = scrapper.find_artist(artist_name)
+            artist_url = self.scrapper.find_artist(artist_name)
             if not artist_url:
                 self.unknown_artist_names.append(artist_name)
             else:
