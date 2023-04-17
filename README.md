@@ -8,3 +8,7 @@ Well, this bot is a solution for you!
 It auto checks all DJs on the soundclound and gives you a complete and understandable summary. 
 
 Less time for search, more fun!
+
+Just type in /analyse command and a list of artists 
+
+Bot: https://t.me/knowyourparty_bot
