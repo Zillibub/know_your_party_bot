@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 class Settings(BaseSettings):
-    TELEGRAM_BOT_TOKEN: str
+    telegram_bot_token: str
     openai_token: str
 
 
