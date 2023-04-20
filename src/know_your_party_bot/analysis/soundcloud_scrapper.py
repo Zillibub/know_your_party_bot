@@ -81,3 +81,19 @@ class SoundCloudScrapper:
                 genres.append(genre_soup.attrs["content"])
 
         return Counter(genres)
+
+    @staticmethod
+    def get_subscriber_count(artist_url: str) -> int:
+        """
+        Given the url of an artist's SoundCloud page, returns the number of subscribers.
+        :param artist_url: str, the url of the artist's SoundCloud page.
+        :return:  int or None, the number of subscribers, or None if no count is found.
+        """
+        response = requests.get(artist_url)
+        artist_soup = BeautifulSoup(response.content, 'html.parser')
+
+        count_soup = artist_soup.find(class_="infoStats__value", string=lambda text: "Followers" in text)
+        count_str = count_soup.string.strip()
+        # Remove commas and convert to integer
+        count = int(count_str.replace(",", ""))
+        return count

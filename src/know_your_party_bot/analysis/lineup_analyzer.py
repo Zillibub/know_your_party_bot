@@ -1,7 +1,7 @@
 import io
 import seaborn as sns
 import matplotlib.pyplot as plt
-from typing import List
+from typing import List, Tuple
 from collections import Counter
 from dataclasses import dataclass
 from know_your_party_bot.analysis.soundcloud_scrapper import SoundCloudScrapper
@@ -53,7 +53,7 @@ class LineupAnalyser:
         )
         return analysis_result
 
-    def _get_top_genres(self):
+    def _get_top_genres(self, amount: int = 5):
         genres_counters = [
             SoundCloudScrapper().get_genre(artist_url)
             for artist_url in self.artist_urls
@@ -63,7 +63,26 @@ class LineupAnalyser:
 
         combined = sum(genres_counters, Counter())
 
-        return dict(combined.most_common(5))
+        return dict(combined.most_common(amount))
+
+    def _get_most_popular(self, amount: int = 5) -> List[Tuple[str, int]]:
+        """
+        Returns a list of the most popular SoundCloud artists among the artist URLs in this object,
+        sorted by the number of subscribers. Each item in the list is a tuple with the artist URL
+        and the number of subscribers.
+
+        :param amount: int, the maximum number of artists to return. Default is 5.
+        :return: list of tuples, the most popular SoundCloud artists among the artist URLs in this object.
+        """
+        sub_amount = [
+            SoundCloudScrapper().get_subscriber_count(artist_url)
+            for artist_url in self.artist_urls
+        ]
+
+        amount = min(amount, len(sub_amount))
+        most_popular = [(s, x) for x, s in sorted(zip(sub_amount, self.artist_urls))][-amount:]
+
+        return most_popular
 
     def create_image(self) -> bytes:
 
