@@ -43,6 +43,17 @@ class LineupAnalyser:
             else:
                 self.artist_urls.append(artist_url)
 
+        self.top_genres = self._get_top_genres()
+
+        image_bytes = self.create_image()
+
+        analysis_result = AnalysisResult(
+            image_bytes=image_bytes,
+            unknown_artist_names=self.unknown_artist_names
+        )
+        return analysis_result
+
+    def _get_top_genres(self):
         genres_counters = [
             SoundCloudScrapper().get_genre(artist_url)
             for artist_url in self.artist_urls
@@ -52,15 +63,7 @@ class LineupAnalyser:
 
         combined = sum(genres_counters, Counter())
 
-        self.top_genres = dict(combined.most_common(5))
-
-        image_bytes = self.create_image()
-
-        analysis_result = AnalysisResult(
-            image_bytes=image_bytes,
-            unknown_artist_names=self.unknown_artist_names
-        )
-        return analysis_result
+        return dict(combined.most_common(5))
 
     def create_image(self) -> bytes:
 
